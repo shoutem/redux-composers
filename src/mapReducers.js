@@ -1,8 +1,7 @@
 import _ from 'lodash';
 
-function checkKeySelector(keySelector) {
-  const isKeySelectorFunction = _.isFunction(keySelector);
-  if (!isKeySelectorFunction) {
+function validateKeySelector(keySelector) {
+  if (!_.isFunction(keySelector)) {
     if (!_.isString(keySelector)) {
       throw new Error('KeySelector argument should be a function or a string');
     }
@@ -12,8 +11,8 @@ function checkKeySelector(keySelector) {
   }
 }
 
-export function mapOneReducer(keySelector, reducer) {
-  checkKeySelector(keySelector);
+export function mapReducer(keySelector, reducer) {
+  validateKeySelector(keySelector);
 
   return (state = {}, action) => {
     const key = _.isFunction(keySelector) ? keySelector(action) : _.get(action, keySelector);
@@ -28,9 +27,9 @@ export function mapOneReducer(keySelector, reducer) {
   };
 }
 
-export function mapDynamicReducers(keySelector, reducerFactory) {
+export function mapReducerFactory(keySelector, reducerFactory) {
   const reducers = {};
-  checkKeySelector(keySelector);
+  validateKeySelector(keySelector);
 
   return (state = {}, action) => {
     const key = _.isFunction(keySelector) ? keySelector(action) : _.get(action, keySelector);
@@ -48,8 +47,7 @@ export function mapDynamicReducers(keySelector, reducerFactory) {
 
 /**
  * MapReducers is composer that enables applying reducer on substate that is selected based
- * on key. Key is selected from action based on keySelector. If key doesn't exists in state
- * then undefined is passed to reducer as state argument. It allows for one reducer to be
+ * on key. Key is selected from action based on keySelector. It allows for one reducer to be
  * applied to substate depending on key in action or to dynamically create reducer for each
  * key and apply it on substate.
  * @param keySelector is function that returns key or path to key in action
@@ -62,7 +60,7 @@ export function mapDynamicReducers(keySelector, reducerFactory) {
 export default function mapReducers(keySelector, reducer) {
   const result = reducer(undefined, {});
   if (_.isPlainObject(result)) {
-    return mapOneReducer(keySelector, reducer);
+    return mapReducer(keySelector, reducer);
   }
-  return mapDynamicReducers(keySelector, reducer);
+  return mapReducerFactory(keySelector, reducer);
 }

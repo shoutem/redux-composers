@@ -1,6 +1,6 @@
 {
   "name": "@shoutem/redux-composers",
-  "version": "0.0.1",
+  "version": "0.1.0-beta.1",
   "description": "Reducers you can use for composing reducer hierarchy like with combineReducers from redux",
   "main": "lib/index.js",
   "files": [
@@ -26,7 +26,18 @@
     "pipeline",
     "map"
   ],
-  "author": "Shoutem",
+  "author": {
+    "name" : "Vedran Ivanac",
+    "email" : "vedran@shoutem.com",
+    "url" : "https://github.com/vedrani"
+  },
+  "contributors": [
+   {
+      "name" : "Željko Rumenjak",
+      "email" : "zeljko@shoutem.com",
+      "url" : "https://github.com/zrumenjak",
+    }
+  ],
   "license": "MIT",
   "bugs": {
     "url": "https://bitbucket.org/fiveminutes/redux-composers/issues"
