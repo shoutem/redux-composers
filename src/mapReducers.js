@@ -59,8 +59,9 @@ export function mapReducerFactory(keySelector, reducerFactory) {
  */
 export default function mapReducers(keySelector, reducer) {
   const result = reducer(undefined, {});
-  if (_.isPlainObject(result)) {
-    return mapReducer(keySelector, reducer);
+  if (_.isFunction(result)) {
+    return mapReducerFactory(keySelector, reducer);
   }
-  return mapReducerFactory(keySelector, reducer);
+
+  return mapReducer(keySelector, reducer);
 }

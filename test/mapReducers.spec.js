@@ -7,6 +7,7 @@ import {
 import {
   reducerNormal,
   reducerOther,
+  reducerArray,
 } from './helpers/reducers';
 
 describe('Map reducers', () => {
@@ -14,6 +15,15 @@ describe('Map reducers', () => {
     const testReducer = mapReducers(
       'key',
       reducerNormal
+    );
+    const state = testReducer(undefined, {});
+    expect(state).to.deep.equal({});
+  });
+
+  it('has a valid initial state with array reducer', () => {
+    const testReducer = mapReducers(
+      'key',
+      () => reducerArray
     );
     const state = testReducer(undefined, {});
     expect(state).to.deep.equal({});
@@ -42,6 +52,22 @@ describe('Map reducers', () => {
     };
     const state = testReducer(undefined, action);
     expect(state).to.deep.equal({5: {data: 'today'}});
+  });
+
+  it('produce new valid array substate with correct key path', () => {
+    const testReducer = mapReducers(
+      'meta.key',
+      reducerArray
+    );
+    const action = {
+      type: 'test',
+      meta: {
+        key: 5
+      },
+      payload: ['today', 'tomorrow'],
+    };
+    const state = testReducer(undefined, action);
+    expect(state).to.deep.equal({5: ['today', 'tomorrow']});
   });
 
   it('produce overwritten valid substate with correct key path', () => {
