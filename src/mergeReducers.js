@@ -8,9 +8,16 @@ import _ from 'lodash';
  * @returns {Function}: A reducer that invokes every reducer inside the reducers array, and constructs
  * a state object or array by deep merging states returned by reducers.
  */
-export default function mergeReducers(reducers) {
+export default function mergeReducers(reducers, merger = _.merge) {
   return (state, action) => {
-    const nextStates = reducers.map(reducer => reducer(state, action));
-    return _.merge(...nextStates);
+    const nextStates = reducers.map(reducer => reducer(state, action))
+    const nextChangedStates = _.filter(nextStates, nextState => nextState !== state);
+
+    if(_.isEmpty(nextChangedStates)) {
+      return state;
+    }
+
+    const defaultState = _.cloneDeep(state);
+    return merger(defaultState, ...nextChangedStates);
   };
 }
