@@ -11,7 +11,9 @@ import _ from 'lodash';
 export default function mergeReducers(reducers, merger = _.merge) {
   return (state, action) => {
     const nextStates = reducers.map(reducer => reducer(state, action))
-    const nextChangedStates = _.filter(nextStates, nextState => nextState !== state);
+    const nextChangedStates = _.filter(nextStates, nextState =>
+      nextState !== state && !_.isEmpty(nextState)
+    );
 
     if(_.isEmpty(nextChangedStates)) {
       return state;

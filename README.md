@@ -47,7 +47,7 @@ function todos(state = [], action) {
   }
 }
 
-// extending reducer
+// extending reducer with new functionality
 function todosRemove(state = [], action) {
   switch (action.type) {
     case 'REMOVE_FINISHED_TODOS':
@@ -57,7 +57,7 @@ function todosRemove(state = [], action) {
   }
 }
 
-// generic sort reducer
+// generic sort reducer that can be used to sort any array
 function sort(state = [], action) {
   if(!action.meta || !action.sortBy) {
     return state;
@@ -72,13 +72,14 @@ function sort(state = [], action) {
 export default chainReducers([todos, todosRemove, sort])
 ```
 
-#### `mergeReducers(reducers)`
+#### `mergeReducers(reducers, merger = _.merge)`
 Merges the states returned by multiple reducers. Each reducer will receive the old state. The final new state will be
-calculated by performing a deep merge of all of the states returned by reducers. Deep merge is used, that means that
-objects and arrays will be merged on all-levels. Order of reducers defines order od merging. Can be used for extending
-original reducer with new functionality or overriding existing functionality. For example, adding sorting & filtering
-capabilities, responding to new actions, but also if you want to group reducers around some responsibility/functionality
-and then reuse them.
+calculated by performing a deep merge (default merge method) of all of the states returned by reducers with cloned
+instance of initial state (cloning is performed only in case if any reducer returns some new state). Deep merge is used,
+that means that objects and arrays will be merged on all-levels. Order of reducers defines order od merging. Can be used
+for extending original reducer with new functionality or overriding existing functionality. For example, adding sorting
+& filtering capabilities, responding to new actions, but also if you ant to group reducers around some
+responsibility/functionality and then reuse them.
 ###### Arguments
 `reducers` (*Array*): Order of reducers in array defines the order of merging states returned by reducers. Each reducer
 should:
@@ -86,22 +87,46 @@ should:
 * return same type of state as rest of reducers in array
 * take into account that other reducers in array can modify state
 
+`merger` (*Function*): Optional argument defines method of merging new states produced by reducers. By defdault `_.merge`
+is used, but you can use for example `_.assign` or any other function with same signature as `function(object, [sources])`.
+
 ###### Returns
 (*Function*): A reducer that invokes every reducer inside the `reducers` array, and constructs a state
 object or array by deep merging states returned by reducers.
 
 ###### Example
+
 ```javascript
-// overriding reducer
-function (state = [], action) {
+function todos(state = {}, action) {
   switch (action.type) {
-    case 'ADD_TODO':      
-      return state.concat([ action.text ])
+    case 'ADD_TODO': {
+      const { id, text } = action;
+      return {
+        [id]: { id, text },
+      });
+    }
+    default:
+      return state;
+  }
+}
+
+// upperCase first letter in text
+function upperTodos = [], action) {
+  switch (action.type) {
+    case 'ADD_TODO': {
+      const { id, text } = action;
+      const upperText = _.upperFirst(text);
+      return [        
+        [id]: { id, upperText },
+      ]);
+    }
     default:
       return state
   }
 }
-export default mergeReducers([todos, sort])
+
+//result will be state with objects with this signature [id]: { id, text, upperText }
+export default mergeReducers([todos, upperTodos])
 ```
 
 #### `mapReducers(keySelector, reducer)`

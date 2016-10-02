@@ -17,8 +17,28 @@ describe('Merge reducer', () => {
       reducerNormal,
       reducerOther,
     ]);
-    const state = testReducer(undefined, {});
+    const state = testReducer({}, {});
     expect(state).to.deep.equal({});
+  });
+
+  it('returns same state reference if no new state is generated', () => {
+    const initialState = {
+      a: 0,
+      d: 99,
+    };
+    const testReducer = mergeReducers([
+      () => (null),
+      () => (undefined),
+      () => (initialState),
+    ]);
+
+    const action = {
+      type: 'test',
+      payload: [1, 2],
+    };
+
+    const state = testReducer(initialState, action);
+    expect(state).to.equal(initialState);
   });
 
   it('extends state', () => {
