@@ -1,32 +1,31 @@
 redux-composers
 ====================
 
-Redux-composers introduces additional composer reducers besides original `combineReducers` from redux. Original method
-from redux allows to create hierarchy of reducers that represent state with numerous substates, but we think that
-besides `combineReducers` there are also other composers that allow to compose parts of hierarchy in different ways.
-We introduce three composer reducers: `chainReducers`, `mergeReducers` and `mapReducers`.
+_Redux-composers_ package introduces additional reducer composers besides 
+[`combineReducers`](http://redux.js.org/docs/api/combineReducers.html) from [redux](https://github.com/reactjs/redux),
+which enable to compose hierarchy in different ways. We introduce 3 additional composer reducers: `chainReducers`,
+`mergeReducers` and `mapReducers`.
 
-Composer reducer is our name for reducers that don't manage data in state directly like plain reducers. Composers are
-structuring state enabling to build various hierarchies, in short they compose. Each of our composers can be used in
-various use cases and combinations with other reducers.
+By definition, reducer composer is a function that turns multiple reducers into
+single reducer. Each type of composer manages state and reducers in different way, enabling you to build various
+hierarchies. Composers can be used in various use cases and combinations with other reducers.
 
 ## Installation
 
 ```
-$ npm install @shoutem/redux-composers
+$ npm install @shoutem/redux-composers --save
 ```
 
 ## Composers
 
-#### `chainReducers(reducers)`
-Chains multiple reducers, each reducer will get the state returned by the previous reducer. The final state will be the
-state returned by the last reducer in the chain. Reducers order of execution is defined with order in array. Can be used
-for extending original reducer with new functionality or overriding existing functionality. For example, adding sorting
-& filtering capabilities, responding to new actions, but also if you want to group reducers around some
-responsibility/functionality and then reuse them.
+### `chainReducers(reducers)`
+Chain array of reducers, each reducer receiving state returned by the previous reducer. The final state will be state
+returned by the last reducer in the chain. Can be used for extending original reducer with new functionality or
+overriding existing functionality. For example, adding sorting & filtering capabilities, responding to new actions,
+but also if you want to group reducers around some responsibility/functionality and then reuse them.
+
 ###### Arguments
-`reducers` (*Array*): Order of reducers in array defines the order of execution of reducers in chain. Each reducer 
-should:
+`reducers` (*Array*): Order of reducers execution in chain is defined by array. Each reducer should:
 
 * return same type of state as rest of reducers in array
 * take into account that other reducers in array can modify state
@@ -72,14 +71,11 @@ function sort(state = [], action) {
 export default chainReducers([todos, todosRemove, sort])
 ```
 
-#### `mergeReducers(reducers, merger = _.merge)`
-Merges the states returned by multiple reducers. Each reducer will receive the old state. The final new state will be
-calculated by performing a deep merge (default merge method) of all of the states returned by reducers with cloned
-instance of initial state (cloning is performed only in case if any reducer returns some new state). Deep merge is used,
-that means that objects and arrays will be merged on all-levels. Order of reducers defines order od merging. Can be used
-for extending original reducer with new functionality or overriding existing functionality. For example, adding sorting
-& filtering capabilities, responding to new actions, but also if you ant to group reducers around some
-responsibility/functionality and then reuse them.
+### `mergeReducers(reducers, merger = _.merge)`
+Merges the states returned by each reducer. Can be used for extending original reducer with new functionality or
+overriding existing functionality. For example, adding sorting & filtering capabilities, responding to new actions,
+but also if you want to group reducers around feature/functionality and then reuse them.
+
 ###### Arguments
 `reducers` (*Array*): Order of reducers in array defines the order of merging states returned by reducers. Each reducer
 should:
@@ -87,12 +83,14 @@ should:
 * return same type of state as rest of reducers in array
 * take into account that other reducers in array can modify state
 
-`merger` (*Function*): Optional argument defines method of merging new states produced by reducers. By defdault `_.merge`
+`merger` (*Function*): Optional argument defines method of merging new states produced by reducers. By default `_.merge`
 is used, but you can use for example `_.assign` or any other function with same signature as `function(object, [sources])`.
 
 ###### Returns
-(*Function*): A reducer that invokes every reducer inside the `reducers` array, and constructs a state
-object or array by deep merging states returned by reducers.
+(*Function*): A reducer that invokes every reducer inside the `reducers` array with original state and constructs a
+state object or array by deep merging states returned by reducers. The final new state will be calculated by performing
+a merge of all of the states returned by reducers with cloned instance of original state (cloning is performed only in
+case if any reducer returns new state).
 
 ###### Example
 
@@ -129,16 +127,17 @@ function upperTodos = [], action) {
 export default mergeReducers([todos, upperTodos])
 ```
 
-#### `mapReducers(keySelector, reducer)`
-MapReducers is composer that enables applying reducer on substate that is selected based on key. Key is selected from
-action based on keySelector. If key doesn't exists in state then `undefined` is passed to reducer as state argument and
-newly produced result from reducer is saved in the state under the reducer's key. MapReducers can be used when you have
-need for multiple instances of state, but you want to apply changes only on instance with same key as key in action.
-Uses map as data structure.
+### `mapReducers(keySelector, reducer)`
+MapReducers is composer that applies `reducer` on substate that is selected based on key. Key is selected from
+action based on `keySelector`. `mapReducers` can be used when you have need for multiple instances of state, but you
+want to apply changes only on instance with same key as key in action. Uses map as data structure.
+
 ###### Arguments
-`keySelector` (*Function|String*): It can be a function or string. Function should be defines as `keySelector(action)`
+`keySelector` (*Function|String*): It can be a function or string. Function should be defined as `keySelector(action)`
 where function returns key extracted from `action`. You can also pass string which defines path to property in `action`.
-Path can be defined in every convention that `_.get` understands from `lodash` library.
+Path can be defined in every convention that `_.get` understands from `lodash` library. If key doesn't exists in state
+then `undefined` is passed to reducer as state argument and newly produced result from reducer is saved in the state
+under the reducer's key. 
 
 `reducer` (*Function*): Applied to substate under key defined with `keySelector`.
 ###### Returns
@@ -179,6 +178,8 @@ export default mapReducers('meta.categoryId', todoIds)
 
 ## License
 
-MIT
+[The BSD License](https://opensource.org/licenses/BSD-3-Clause)
+Copyright (c) 2016-present, [Shoutem](http://shoutem.github.io)
+
 
 
