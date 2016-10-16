@@ -20,9 +20,8 @@ $ npm install @shoutem/redux-composers --save
 
 ### `chainReducers(reducers)`
 Chain array of reducers, each reducer receiving state returned by the previous reducer. The final state will be state
-returned by the last reducer in the chain. Can be used for extending original reducer with new functionality or
-overriding existing functionality. For example, adding sorting & filtering capabilities, responding to new actions,
-but also if you want to group reducers around some responsibility/functionality and then reuse them.
+returned by the last reducer in the chain. Used for responding to new actions, extending and overriding existing
+actions, adding generic sorting and filtering capabilities, and grouping reducers.
 
 ###### Arguments
 `reducers` (*Array*): Order of reducers execution in chain is defined by array. Each reducer should:
@@ -72,9 +71,8 @@ export default chainReducers([todos, todosRemove, sort])
 ```
 
 ### `mergeReducers(reducers, merger = _.merge)`
-Merges the states returned by each reducer. Can be used for extending original reducer with new functionality or
-overriding existing functionality. For example, adding sorting & filtering capabilities, responding to new actions,
-but also if you want to group reducers around feature/functionality and then reuse them.
+Merges the states returned by each reducer. Used for responding to new actions, extending and overriding existing
+actions, adding generic sorting and filtering capabilities, and grouping reducers.
 
 ###### Arguments
 `reducers` (*Array*): Order of reducers in array defines the order of merging states returned by reducers. Each reducer
@@ -174,6 +172,12 @@ function todoIds(state= [], action) => {
 };
 }
 export default mapReducers('meta.categoryId', todoIds)
+```
+
+## Test
+
+```
+$ npm run test
 ```
 
 ## License

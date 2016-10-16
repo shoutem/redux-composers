@@ -1,6 +1,6 @@
 {
   "name": "@shoutem/redux-composers",
-  "version": "0.1.0-beta.3",
+  "version": "0.1.0",
   "description": "Reducers you can use for composing reducer hierarchy like with combineReducers from redux",
   "main": "lib/index.js",
   "files": [
@@ -38,11 +38,11 @@
       "url" : "https://github.com/zrumenjak"
    }
   ],
-  "license": "MIT",
+  "license": "BSD-3-Clause",
   "bugs": {
-    "url": "https://bitbucket.org/fiveminutes/redux-composers/issues"
+    "url": "https://github.com/shoutem/redux-composers/issues"
   },
-  "homepage": "https://bitbucket.org/fiveminutes/redux-composers#readme",
+  "homepage": "https://github.com/shoutem/redux-composers",
   "devDependencies": {
     "babel-cli": "^6.9.0",
     "babel-core": "^6.9.1",
