@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import { isTargetAllAction } from './context';
+import { isTargetAllAction } from './actionOptions';
 
 function validateKeySelector(keySelector) {
   if (!_.isFunction(keySelector)) {
