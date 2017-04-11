@@ -2,39 +2,39 @@
 import _ from 'lodash';
 import { expect } from 'chai';
 import {
-  addActionsOption,
+  addActionOptions,
   getActionOptions,
   setActionOption,
   ACTION_OPTIONS_KEY,
 } from '../src/actionOptions';
 
 describe('Action Options', () => {
-  describe('addActionsOption()', () => {
+  describe('addActionOptions()', () => {
     it('adds action options to action.meta', () => {
       const action = {};
-      addActionsOption(action);
+      addActionOptions(action);
       expect(action.meta[ACTION_OPTIONS_KEY]).to.be.ok;
     });
     it('adds context to action with initial settings', () => {
       const action = {};
       const initialContext = { a: 1 };
-      addActionsOption(action, initialContext);
+      addActionOptions(action, initialContext);
       expect(action.meta[ACTION_OPTIONS_KEY]).to.equal(initialContext);
     });
     it('throws error if action is not object', () => {
       const action = {};
-      expect(() => addActionsOption(1)).to.throw('Invalid action, can not add action options');
+      expect(() => addActionOptions(1)).to.throw('Invalid action, can not add action options');
     });
     it('throws error if initialContext is not object', () => {
       const action = {};
-      expect(() => addActionsOption(action, 1)).to.throw('Action options must be an object');
+      expect(() => addActionOptions(action, 1)).to.throw('Action options must be an object');
     });
   });
   describe('getActionOptions', () => {
     it('returns action options', () => {
       const action = {};
       const initialContext = { a: 1 };
-      addActionsOption(action, initialContext);
+      addActionOptions(action, initialContext);
       expect(getActionOptions(action)).to.equal(initialContext);
     });
   });
@@ -64,7 +64,7 @@ describe('Action Options', () => {
           b: true,
         },
       };
-      addActionsOption(action, initialContext);
+      addActionOptions(action, initialContext);
       setActionOption(action, ['a', 'b'], true);
       expect(getActionOptions(action)).to.deep.equal(expectedContext);
     });

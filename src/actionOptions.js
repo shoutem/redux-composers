@@ -11,6 +11,7 @@ export const ACTION_OPTIONS_KEY = 'actionOptions';
 // Action marked as TARGET_ALL_OPTION_KEY bypass key:reducer relationship at map reducers
 // and dispatch action to all mapped reducers.
 export const TARGET_ALL_OPTION_KEY = 'targetAll';
+// If key selector returns TARGET_ALL_REDUCERS value, all mapped reducers will be activated
 export const TARGET_ALL_REDUCERS = 'TARGET_ALL';
 
 /**
@@ -18,7 +19,7 @@ export const TARGET_ALL_REDUCERS = 'TARGET_ALL';
  * @param action
  * @param actionOptions
  */
-export function addActionsOption(action, actionOptions = {}) {
+export function addActionOptions(action, actionOptions = {}) {
   if (!_.isPlainObject(action)) {
     throw Error(
       `Invalid action, can not add action options to the ${typeof action}.` +
@@ -34,7 +35,7 @@ export function addActionsOption(action, actionOptions = {}) {
 export function setActionOption(action, option, value) {
   let actionOptions = getActionOptions(action);
   if (!actionOptions) {
-    addActionsOption(action);
+    addActionOptions(action);
     actionOptions = getActionOptions(action);
   }
   _.set(actionOptions, option, value);
