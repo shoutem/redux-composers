@@ -3,7 +3,7 @@ import _ from 'lodash';
 import { expect } from 'chai';
 import {
   mapReducers,
-  extendActionToTargetAllMapReducers,
+  applyToAll,
   TARGET_ALL_REDUCERS,
 } from '../src';
 import {
@@ -144,7 +144,7 @@ describe('Map reducers', () => {
       type: 'test',
       payload: 'allReducersAffected',
     };
-    state = testReducer(state, extendActionToTargetAllMapReducers(allReducersAction));
+    state = testReducer(state, applyToAll(allReducersAction));
     expect(state).to.deep.equal(
       {
         3: { data: 'allReducersAffected' },
@@ -233,7 +233,7 @@ describe('Map reducers', () => {
           }
         );
       });
-      it('reduces all mapReducer reducers when the action is extend to target all', () => {
+      it('reduces all mapReducer reducers when the action is applied to all', () => {
         const testReducer = mapReducers(
           'meta.key',
           reducerNormal
@@ -260,7 +260,7 @@ describe('Map reducers', () => {
           type: 'test',
           payload: 'allReducersAffected',
         };
-        state = testReducer(state, extendActionToTargetAllMapReducers(allReducersAction));
+        state = testReducer(state, applyToAll(allReducersAction));
         expect(state).to.deep.equal(
           {
             3: { data: 'allReducersAffected' },
@@ -306,7 +306,7 @@ describe('Map reducers', () => {
           }
         );
       });
-      it('reduces all mapFactoryReducer reducers when the action is extend to target all', () => {
+      it('reduces all mapFactoryReducer reducers when the action is applied to target all', () => {
         const testReducer = mapReducers(
           'meta.key',
           key => reducerNormal
@@ -333,7 +333,7 @@ describe('Map reducers', () => {
           type: 'test',
           payload: 'allReducersAffected',
         };
-        state = testReducer(state, extendActionToTargetAllMapReducers(allReducersAction));
+        state = testReducer(state, applyToAll(allReducersAction));
         expect(state).to.deep.equal(
           {
             3: { data: 'allReducersAffected' },

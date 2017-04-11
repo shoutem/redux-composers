@@ -1,5 +1,11 @@
 import _ from 'lodash';
-import { isTargetAllAction, isTargetAllKey } from './actionOptions';
+import { setActionOption, getActionOptions } from './actionOptions';
+
+// Action marked as TARGET_ALL_OPTION_KEY bypass key:reducer relationship at map reducers
+// and dispatch action to all mapped reducers.
+export const TARGET_ALL_OPTION_KEY = 'targetAll';
+// If key selector returns TARGET_ALL_REDUCERS value, all mapped reducers will be activated
+export const TARGET_ALL_REDUCERS = 'TARGET_ALL';
 
 function validateKeySelector(keySelector) {
   if (!_.isFunction(keySelector)) {
@@ -10,6 +16,19 @@ function validateKeySelector(keySelector) {
       throw new Error('KeySelector argument is empty string.');
     }
   }
+}
+
+export function isTargetAllAction(action) {
+  const actionOptions = getActionOptions(action);
+  return _.get(actionOptions, TARGET_ALL_OPTION_KEY);
+}
+
+export function applyToAll(action) {
+  return setActionOption(action, TARGET_ALL_OPTION_KEY, true);
+}
+
+export function isTargetAllKey(keyValue) {
+  return keyValue === TARGET_ALL_REDUCERS;
 }
 
 export function mapReducer(keySelector, reducer) {
@@ -45,7 +64,7 @@ export function mapReducerFactory(keySelector, reducerFactory) {
 
     if (isTargetAllAction(action) || isTargetAllKey(key)) {
       return _.reduce(state, (newState, substate, key) => {
-        const reducer = getReducer(key);
+        const reducer = reducers[key];
         newState[key] = reducer(substate, action);
         return newState;
       }, {});
@@ -55,15 +74,12 @@ export function mapReducerFactory(keySelector, reducerFactory) {
       return state;
     }
 
-    reducers[key] = getReducer(key);
+    reducers[key] = reducers[key] || reducerFactory(key);
     return {
       ...state,
       [key]: reducers[key](state[key], action),
     };
   };
-  function getReducer(key) {
-    return reducers[key] || reducerFactory(key);
-  }
 }
 
 /**

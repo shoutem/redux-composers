@@ -1,16 +1,15 @@
 import mergeReducers from './mergeReducers';
 import chainReducers from './chainReducers';
-import mapReducers from './mapReducers';
-import {
-  extendActionToTargetAllMapReducers,
+import mapReducers, {
+  applyToAll,
   TARGET_ALL_REDUCERS,
-} from './actionOptions';
+} from './mapReducers';
 
 export {
   mergeReducers,
   chainReducers,
   mapReducers,
 
-  extendActionToTargetAllMapReducers,
+  applyToAll,
   TARGET_ALL_REDUCERS,
 };
