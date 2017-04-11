@@ -11,6 +11,7 @@ export const ACTION_OPTIONS_KEY = 'actionOptions';
 // Action marked as TARGET_ALL_OPTION_KEY bypass key:reducer relationship at map reducers
 // and dispatch action to all mapped reducers.
 export const TARGET_ALL_OPTION_KEY = 'targetAll';
+export const TARGET_ALL_REDUCERS = 'TARGET_ALL';
 
 /**
  * Mutates action by adding `actionOptions` to the `action.meta`.
@@ -52,3 +53,8 @@ export function isTargetAllAction(action) {
 export function extendActionToTargetAllMapReducers(action) {
   return setActionOption(action, TARGET_ALL_OPTION_KEY, true);
 }
+
+export function isTargetAllKey(keyValue) {
+  return keyValue === TARGET_ALL_REDUCERS;
+}
+

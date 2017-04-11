@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import { isTargetAllAction } from './actionOptions';
+import { isTargetAllAction, isTargetAllKey } from './actionOptions';
 
 function validateKeySelector(keySelector) {
   if (!_.isFunction(keySelector)) {
@@ -16,14 +16,15 @@ export function mapReducer(keySelector, reducer) {
   validateKeySelector(keySelector);
 
   return (state = {}, action) => {
-    if (isTargetAllAction(action)) {
+    const key = _.isFunction(keySelector) ? keySelector(action) : _.get(action, keySelector);
+
+    if (isTargetAllAction(action) || isTargetAllKey(key)) {
       return _.reduce(state, (newState, substate, key) => {
         newState[key] = reducer(substate, action);
         return newState;
       }, {});
     }
 
-    const key = _.isFunction(keySelector) ? keySelector(action) : _.get(action, keySelector);
     if (!key) {
       return state;
     }
@@ -40,7 +41,9 @@ export function mapReducerFactory(keySelector, reducerFactory) {
   validateKeySelector(keySelector);
 
   return (state = {}, action) => {
-    if (isTargetAllAction(action)) {
+    const key = _.isFunction(keySelector) ? keySelector(action) : _.get(action, keySelector);
+
+    if (isTargetAllAction(action) || isTargetAllKey(key)) {
       return _.reduce(state, (newState, substate, key) => {
         const reducer = getReducer(key);
         newState[key] = reducer(substate, action);
@@ -48,7 +51,6 @@ export function mapReducerFactory(keySelector, reducerFactory) {
       }, {});
     }
 
-    const key = _.isFunction(keySelector) ? keySelector(action) : _.get(action, keySelector);
     if (!key) {
       return state;
     }

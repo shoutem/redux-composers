@@ -4,6 +4,7 @@ import { expect } from 'chai';
 import {
   mapReducers,
   extendActionToTargetAllMapReducers,
+  TARGET_ALL_REDUCERS,
 } from '../src';
 import {
   reducerNormal,
@@ -43,7 +44,7 @@ describe('Map reducers', () => {
       payload: 'today',
     };
     const state = testReducer(undefined, action);
-    expect(state).to.deep.equal({5: {data: 'today'}});
+    expect(state).to.deep.equal({ 5: { data: 'today' } });
   });
 
   it('produce new valid array substate with correct key path', () => {
@@ -59,7 +60,7 @@ describe('Map reducers', () => {
       payload: ['today', 'tomorrow'],
     };
     const state = testReducer(undefined, action);
-    expect(state).to.deep.equal({5: ['today', 'tomorrow']});
+    expect(state).to.deep.equal({ 5: ['today', 'tomorrow'] });
   });
 
   it('produce overwritten valid substate with correct key path', () => {
@@ -74,9 +75,9 @@ describe('Map reducers', () => {
       },
       payload: 'today',
     };
-    const initialState = {5: {data: 'yesterday'}};
+    const initialState = { 5: { data: 'yesterday' } };
     const state = testReducer(initialState, action);
-    expect(state).to.deep.equal({5: {data: 'today'}});
+    expect(state).to.deep.equal({ 5: { data: 'today' } });
   });
 
   it('produce new valid substate with correct key func', () => {
@@ -94,7 +95,7 @@ describe('Map reducers', () => {
       payload: 'today',
     };
     const state = testReducer(undefined, action);
-    expect(state).to.deep.equal({5: {data: 'today'}});
+    expect(state).to.deep.equal({ 5: { data: 'today' } });
   });
 
   it('produce overwrite valid substate with correct key func', () => {
@@ -111,9 +112,9 @@ describe('Map reducers', () => {
       },
       payload: 'today',
     };
-    const initialState = {5: {data: 'yesterday'}};
+    const initialState = { 5: { data: 'yesterday' } };
     const state = testReducer(initialState, action);
-    expect(state).to.deep.equal({5: {data: 'today'}});
+    expect(state).to.deep.equal({ 5: { data: 'today' } });
   });
 
   it('handles all map reducers actions', () => {
@@ -146,8 +147,8 @@ describe('Map reducers', () => {
     state = testReducer(state, extendActionToTargetAllMapReducers(allReducersAction));
     expect(state).to.deep.equal(
       {
-        3: {data: 'allReducersAffected'},
-        6: {data: 'allReducersAffected'},
+        3: { data: 'allReducersAffected' },
+        6: { data: 'allReducersAffected' },
       }
     );
   });
@@ -166,7 +167,7 @@ describe('Map reducers', () => {
     it('produce new valid substate', () => {
       const testReducer = mapReducers(
         'meta.key',
-        key => key > 5 ? reducerNormal: reducerOther
+        key => key > 5 ? reducerNormal : reducerOther
       );
       const actionOther = {
         type: 'test',
@@ -187,46 +188,159 @@ describe('Map reducers', () => {
       state = testReducer(state, actionNormal);
       expect(state).to.deep.equal(
         {
-          3: {dataOther: 'other'},
-          6: {data: 'normal'},
+          3: { dataOther: 'other' },
+          6: { data: 'normal' },
         }
       );
     });
 
-    it('handles all map reducers actions', () => {
-      const testReducer = mapReducers(
-        'meta.key',
-        key => reducerNormal
-      );
-      const actionOther = {
-        type: 'test',
-        meta: {
-          key: 3
-        },
-        payload: 'other',
-      };
-      const actionNormal = {
-        type: 'test',
-        meta: {
-          key: 6
-        },
-        payload: 'normal',
-      };
+    describe('Target all mapped reducers', () => {
+      it('reduces all mapReducer reducers when the key selector has target all value', () => {
+        const testReducer = mapReducers(
+          'meta.key',
+          reducerNormal
+        );
+        const actionOther = {
+          type: 'test',
+          meta: {
+            key: 3
+          },
+          payload: 'other',
+        };
+        const actionNormal = {
+          type: 'test',
+          meta: {
+            key: 6
+          },
+          payload: 'normal',
+        };
 
-      let state = testReducer(undefined, actionOther);
-      state = testReducer(state, actionNormal);
+        let state = testReducer(undefined, actionOther);
+        state = testReducer(state, actionNormal);
 
-      const allReducersAction = {
-        type: 'test',
-        payload: 'allReducersAffected',
-      };
-      state = testReducer(state, extendActionToTargetAllMapReducers(allReducersAction));
-      expect(state).to.deep.equal(
-        {
-          3: {data: 'allReducersAffected'},
-          6: {data: 'allReducersAffected'},
-        }
-      );
+        const dummyAction = {
+          type: 'test',
+          meta: {
+            key: TARGET_ALL_REDUCERS,
+          },
+          payload: 'allReducersAffected',
+        };
+        state = testReducer(state, dummyAction);
+        expect(state).to.deep.equal(
+          {
+            3: { data: 'allReducersAffected' },
+            6: { data: 'allReducersAffected' },
+          }
+        );
+      });
+      it('reduces all mapReducer reducers when the action is extend to target all', () => {
+        const testReducer = mapReducers(
+          'meta.key',
+          reducerNormal
+        );
+        const actionOther = {
+          type: 'test',
+          meta: {
+            key: 3
+          },
+          payload: 'other',
+        };
+        const actionNormal = {
+          type: 'test',
+          meta: {
+            key: 6
+          },
+          payload: 'normal',
+        };
+
+        let state = testReducer(undefined, actionOther);
+        state = testReducer(state, actionNormal);
+
+        const allReducersAction = {
+          type: 'test',
+          payload: 'allReducersAffected',
+        };
+        state = testReducer(state, extendActionToTargetAllMapReducers(allReducersAction));
+        expect(state).to.deep.equal(
+          {
+            3: { data: 'allReducersAffected' },
+            6: { data: 'allReducersAffected' },
+          }
+        );
+      });
+      it('reduces all mapReducerFactory reducers when the key selector has target all value', () => {
+        const testReducer = mapReducers(
+          'meta.key',
+          key => reducerNormal
+        );
+        const actionOther = {
+          type: 'test',
+          meta: {
+            key: 3
+          },
+          payload: 'other',
+        };
+        const actionNormal = {
+          type: 'test',
+          meta: {
+            key: 6
+          },
+          payload: 'normal',
+        };
+
+        let state = testReducer(undefined, actionOther);
+        state = testReducer(state, actionNormal);
+
+        const dummyAction = {
+          type: 'test',
+          meta: {
+            key: TARGET_ALL_REDUCERS,
+          },
+          payload: 'allReducersAffected',
+        };
+        state = testReducer(state, dummyAction);
+        expect(state).to.deep.equal(
+          {
+            3: { data: 'allReducersAffected' },
+            6: { data: 'allReducersAffected' },
+          }
+        );
+      });
+      it('reduces all mapFactoryReducer reducers when the action is extend to target all', () => {
+        const testReducer = mapReducers(
+          'meta.key',
+          key => reducerNormal
+        );
+        const actionOther = {
+          type: 'test',
+          meta: {
+            key: 3
+          },
+          payload: 'other',
+        };
+        const actionNormal = {
+          type: 'test',
+          meta: {
+            key: 6
+          },
+          payload: 'normal',
+        };
+
+        let state = testReducer(undefined, actionOther);
+        state = testReducer(state, actionNormal);
+
+        const allReducersAction = {
+          type: 'test',
+          payload: 'allReducersAffected',
+        };
+        state = testReducer(state, extendActionToTargetAllMapReducers(allReducersAction));
+        expect(state).to.deep.equal(
+          {
+            3: { data: 'allReducersAffected' },
+            6: { data: 'allReducersAffected' },
+          }
+        );
+      });
     });
   });
 });
