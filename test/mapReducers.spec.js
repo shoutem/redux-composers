@@ -233,6 +233,41 @@ describe('Map reducers', () => {
           }
         );
       });
+      it('reduces all mapReducer reducers when the key selector returns undefined value', () => {
+        const testReducer = mapReducers(
+          'meta.key',
+          reducerNormal
+        );
+        const actionOther = {
+          type: 'test',
+          meta: {
+            key: 3
+          },
+          payload: 'other',
+        };
+        const actionNormal = {
+          type: 'test',
+          meta: {
+            key: 6
+          },
+          payload: 'normal',
+        };
+
+        let state = testReducer(undefined, actionOther);
+        state = testReducer(state, actionNormal);
+
+        const dummyAction = {
+          type: 'test',
+          payload: 'allReducersAffected',
+        };
+        state = testReducer(state, dummyAction);
+        expect(state).to.deep.equal(
+          {
+            3: { data: 'allReducersAffected' },
+            6: { data: 'allReducersAffected' },
+          }
+        );
+      });
       it('reduces all mapReducer reducers when the action is applied to all', () => {
         const testReducer = mapReducers(
           'meta.key',
@@ -296,6 +331,41 @@ describe('Map reducers', () => {
           meta: {
             key: TARGET_ALL_REDUCERS,
           },
+          payload: 'allReducersAffected',
+        };
+        state = testReducer(state, dummyAction);
+        expect(state).to.deep.equal(
+          {
+            3: { data: 'allReducersAffected' },
+            6: { data: 'allReducersAffected' },
+          }
+        );
+      });
+      it('reduces all mapReducerFactory reducers when the key selector returns undefined value', () => {
+        const testReducer = mapReducers(
+          'meta.key',
+          key => reducerNormal
+        );
+        const actionOther = {
+          type: 'test',
+          meta: {
+            key: 3
+          },
+          payload: 'other',
+        };
+        const actionNormal = {
+          type: 'test',
+          meta: {
+            key: 6
+          },
+          payload: 'normal',
+        };
+
+        let state = testReducer(undefined, actionOther);
+        state = testReducer(state, actionNormal);
+
+        const dummyAction = {
+          type: 'test',
           payload: 'allReducersAffected',
         };
         state = testReducer(state, dummyAction);

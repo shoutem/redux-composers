@@ -18,6 +18,14 @@ function validateKeySelector(keySelector) {
   }
 }
 
+function resolveKey(action, keySelector) {
+  const resolvedKey = _.isFunction(keySelector) ?
+    keySelector(action) :
+    _.get(action, keySelector);
+
+  return resolvedKey || TARGET_ALL_REDUCERS;
+}
+
 export function isTargetAllAction(action) {
   const actionOptions = getActionOptions(action);
   return _.get(actionOptions, TARGET_ALL_OPTION_KEY);
@@ -35,17 +43,17 @@ export function mapReducer(keySelector, reducer) {
   validateKeySelector(keySelector);
 
   return (state = {}, action) => {
-    const key = _.isFunction(keySelector) ? keySelector(action) : _.get(action, keySelector);
+    const key = resolveKey(action, keySelector);
 
-    if (isTargetAllAction(action) || isTargetAllKey(key)) {
-      return _.reduce(state, (newState, substate, key) => {
-        newState[key] = reducer(substate, action);
+    const targetAllKey = isTargetAllKey(key);
+    const targetAllAction = isTargetAllAction(action);
+
+    if (targetAllAction || targetAllKey) {
+      return _.reduce(state, (newState, substate, stateKey) => {
+        // eslint-disable-next-line no-param-reassign
+        newState[stateKey] = reducer(substate, action);
         return newState;
       }, {});
-    }
-
-    if (!key) {
-      return state;
     }
 
     return {
@@ -60,18 +68,18 @@ export function mapReducerFactory(keySelector, reducerFactory) {
   validateKeySelector(keySelector);
 
   return (state = {}, action) => {
-    const key = _.isFunction(keySelector) ? keySelector(action) : _.get(action, keySelector);
+    const key = resolveKey(action, keySelector);
 
-    if (isTargetAllAction(action) || isTargetAllKey(key)) {
-      return _.reduce(state, (newState, substate, key) => {
-        const reducer = reducers[key];
-        newState[key] = reducer(substate, action);
+    const targetAllKey = isTargetAllKey(key);
+    const targetAllAction = isTargetAllAction(action);
+
+    if (targetAllAction || targetAllKey) {
+      return _.reduce(state, (newState, substate, stateKey) => {
+        const reducer = reducers[stateKey];
+        // eslint-disable-next-line no-param-reassign
+        newState[stateKey] = reducer(substate, action);
         return newState;
       }, {});
-    }
-
-    if (!key) {
-      return state;
     }
 
     reducers[key] = reducers[key] || reducerFactory(key);
