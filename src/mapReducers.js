@@ -44,6 +44,9 @@ export function mapReducer(keySelector, reducer) {
 
   return (state = {}, action) => {
     const key = resolveKey(action, keySelector);
+    if (!key) {
+      return state;
+    }
 
     const targetAllKey = isTargetAllKey(key);
     const targetAllAction = isTargetAllAction(action);
@@ -69,6 +72,9 @@ export function mapReducerFactory(keySelector, reducerFactory) {
 
   return (state = {}, action) => {
     const key = resolveKey(action, keySelector);
+    if (!key) {
+      return state;
+    }
 
     const targetAllKey = isTargetAllKey(key);
     const targetAllAction = isTargetAllAction(action);
