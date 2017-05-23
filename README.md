@@ -135,9 +135,13 @@ want to apply changes only on instance with same key as key in action. Uses map 
 where function returns key extracted from `action`. You can also pass string which defines path to property in `action`.
 Path can be defined in every convention that `_.get` understands from `lodash` library. If key doesn't exists in state
 then `undefined` is passed to reducer as state argument and newly produced result from reducer is saved in the state
-under the reducer's key. 
+under the reducer's key. Returning `undefined` or `TARGET_ALL_REDUCERS` constant from `keySelector` will pass the action
+to all reducers. 
 
-`reducer` (*Function*): Applied to substate under key defined with `keySelector`.
+`reducer` (*Function*): Applied to substate under key defined with `keySelector`. Can be normal redux reducer or reducer 
+factory. In either way, defined or created reducer is applied to part of state under key defined in action. Reducer factory
+is function that receives key and returns reducer function. In that way enabling to create dynamic reducers for 
+different keys.
 ###### Returns
 (*Function*): A reducer that invokes reducer on substate defined with key extracted from action.
 

@@ -1,4 +1,11 @@
 import _ from 'lodash';
+import { setActionOption, getActionOptions } from './actionOptions';
+
+// Action marked as TARGET_ALL_OPTION_KEY bypass key:reducer relationship at map reducers
+// and dispatch action to all mapped reducers.
+export const TARGET_ALL_OPTION_KEY = 'targetAll';
+// If key selector returns TARGET_ALL_REDUCERS value, all mapped reducers will be activated
+export const TARGET_ALL_REDUCERS = 'TARGET_ALL';
 
 function validateKeySelector(keySelector) {
   if (!_.isFunction(keySelector)) {
@@ -11,13 +18,45 @@ function validateKeySelector(keySelector) {
   }
 }
 
+function resolveKey(action, keySelector) {
+  const resolvedKey = _.isFunction(keySelector) ?
+    keySelector(action) :
+    _.get(action, keySelector);
+
+  return resolvedKey || TARGET_ALL_REDUCERS;
+}
+
+export function isTargetAllAction(action) {
+  const actionOptions = getActionOptions(action);
+  return _.get(actionOptions, TARGET_ALL_OPTION_KEY);
+}
+
+export function applyToAll(action) {
+  return setActionOption(action, TARGET_ALL_OPTION_KEY, true);
+}
+
+export function isTargetAllKey(keyValue) {
+  return keyValue === TARGET_ALL_REDUCERS;
+}
+
 export function mapReducer(keySelector, reducer) {
   validateKeySelector(keySelector);
 
   return (state = {}, action) => {
-    const key = _.isFunction(keySelector) ? keySelector(action) : _.get(action, keySelector);
+    const key = resolveKey(action, keySelector);
     if (!key) {
       return state;
+    }
+
+    const targetAllKey = isTargetAllKey(key);
+    const targetAllAction = isTargetAllAction(action);
+
+    if (targetAllAction || targetAllKey) {
+      return _.reduce(state, (newState, substate, stateKey) => {
+        // eslint-disable-next-line no-param-reassign
+        newState[stateKey] = reducer(substate, action);
+        return newState;
+      }, {});
     }
 
     return {
@@ -32,9 +71,21 @@ export function mapReducerFactory(keySelector, reducerFactory) {
   validateKeySelector(keySelector);
 
   return (state = {}, action) => {
-    const key = _.isFunction(keySelector) ? keySelector(action) : _.get(action, keySelector);
+    const key = resolveKey(action, keySelector);
     if (!key) {
       return state;
+    }
+
+    const targetAllKey = isTargetAllKey(key);
+    const targetAllAction = isTargetAllAction(action);
+
+    if (targetAllAction || targetAllKey) {
+      return _.reduce(state, (newState, substate, stateKey) => {
+        const reducer = reducers[stateKey];
+        // eslint-disable-next-line no-param-reassign
+        newState[stateKey] = reducer(substate, action);
+        return newState;
+      }, {});
     }
 
     reducers[key] = reducers[key] || reducerFactory(key);
