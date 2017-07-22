@@ -1,4 +1,5 @@
 import _ from 'lodash';
+import shallowEqual from 'shallowequal';
 import { setActionOption, getActionOptions } from './actionOptions';
 
 // Action marked as TARGET_ALL_OPTION_KEY bypass key:reducer relationship at map reducers
@@ -40,7 +41,7 @@ function calculateNewStateForAllKeys(state, action, resolveReducer) {
     return reducer(stateForKey, action);
   });
 
-  if (_.eq(state, newState)) {
+  if (shallowEqual(state, newState)) {
     return state;
   }
   return newState;
