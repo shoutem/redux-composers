@@ -80,6 +80,23 @@ describe('Map reducers', () => {
     expect(state).to.deep.equal({ 5: { data: 'today' } });
   });
 
+  it('returns same state instance if no change is applied', () => {
+    const testReducer = mapReducers(
+      'meta.key',
+      reducerNormal
+    );
+    const action = {
+      type: 'something-else',
+      meta: {
+        key: 5
+      },
+      payload: 'today',
+    };
+    const initialState = { 5: { data: 'yesterday' } };
+    const state = testReducer(initialState, action);
+    expect(state).to.equal(initialState);
+  });
+
   it('produce new valid substate with correct key func', () => {
     const keySelector = (action) => action.meta.key;
 
@@ -152,7 +169,6 @@ describe('Map reducers', () => {
       }
     );
   });
-
 
   describe('reducer factory', () => {
     it('has a valid initial state', () => {

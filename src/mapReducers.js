@@ -26,6 +26,50 @@ function resolveKey(action, keySelector) {
   return resolvedKey || TARGET_ALL_REDUCERS;
 }
 
+/**
+ * Calculates new state for all keys applying reducer resolved based on key,
+ * if state is not modified returns same state instance
+ * @param state - redux state
+ * @param action - redux action
+ * @param resolveReducer - returns reducer based on state key
+ * @returns {*} state - new or identical instance based on changes
+ */
+function calculateNewStateForAllKeys(state, action, resolveReducer) {
+  const newState = _.mapValues(state, (stateForKey, key) => {
+    const reducer = resolveReducer(key) || _.identity;
+    return reducer(stateForKey, action);
+  });
+
+  if (_.eq(state, newState)) {
+    return state;
+  }
+  return newState;
+}
+
+/**
+ * Calculates new state applying reducer on substate
+ * based on provided key if state is not modified
+ * returns same state instance
+ * @param state - redux state
+ * @param action - redux action
+ * @param key - select substate to apply reducer
+ * @param reducer - redux reducer function
+ * @returns {*} state - new or identical instance based on changes
+ */
+function calculateNewStateForKey(state, action, key, reducer) {
+  const stateForKey = state[key];
+  const newStateForKey = reducer(stateForKey, action);
+
+  if (_.eq(stateForKey, newStateForKey)) {
+    return state;
+  }
+
+  return {
+    ...state,
+    [key]: newStateForKey,
+  };
+}
+
 export function isTargetAllAction(action) {
   const actionOptions = getActionOptions(action);
   return _.get(actionOptions, TARGET_ALL_OPTION_KEY);
@@ -52,19 +96,22 @@ export function mapReducer(keySelector, reducer) {
     const targetAllAction = isTargetAllAction(action);
 
     if (targetAllAction || targetAllKey) {
-      return _.reduce(state, (newState, substate, stateKey) => {
-        // eslint-disable-next-line no-param-reassign
-        newState[stateKey] = reducer(substate, action);
-        return newState;
-      }, {});
+      return calculateNewStateForAllKeys(
+        state,
+        action,
+        () => reducer
+      );
     }
 
-    return {
-      ...state,
-      [key]: reducer(state[key], action),
-    };
+    return calculateNewStateForKey(
+      state,
+      action,
+      key,
+      reducer
+    );
   };
 }
+
 
 export function mapReducerFactory(keySelector, reducerFactory) {
   const reducers = {};
@@ -80,19 +127,22 @@ export function mapReducerFactory(keySelector, reducerFactory) {
     const targetAllAction = isTargetAllAction(action);
 
     if (targetAllAction || targetAllKey) {
-      return _.reduce(state, (newState, substate, stateKey) => {
-        const reducer = reducers[stateKey];
-        // eslint-disable-next-line no-param-reassign
-        newState[stateKey] = reducer(substate, action);
-        return newState;
-      }, {});
+      return calculateNewStateForAllKeys(
+        state,
+        action,
+        (stateKey) => reducers[stateKey]
+      );
     }
 
     reducers[key] = reducers[key] || reducerFactory(key);
-    return {
-      ...state,
-      [key]: reducers[key](state[key], action),
-    };
+    const reducer = reducers[key];
+
+    return calculateNewStateForKey(
+      state,
+      action,
+      key,
+      reducer
+    );
   };
 }
 
