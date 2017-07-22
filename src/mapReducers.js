@@ -26,6 +26,14 @@ function resolveKey(action, keySelector) {
   return resolvedKey || TARGET_ALL_REDUCERS;
 }
 
+/**
+ * Calculates new state for all keys applying reducer resolved based on key,
+ * if state is not modified returns same state instance
+ * @param state - redux state
+ * @param action - redux action
+ * @param resolveReducer - returns reducer based on state key
+ * @returns {*} state - new or identical instance based on changes
+ */
 function calculateNewStateForAllKeys(state, action, resolveReducer) {
   const newState = _.mapValues(state, (stateForKey, key) => {
     const reducer = resolveReducer(key) || _.identity;
@@ -38,6 +46,16 @@ function calculateNewStateForAllKeys(state, action, resolveReducer) {
   return newState;
 }
 
+/**
+ * Calculates new state applying reducer on substate
+ * based on provided key if state is not modified
+ * returns same state instance
+ * @param state - redux state
+ * @param action - redux action
+ * @param key - select substate to apply reducer
+ * @param reducer - redux reducer function
+ * @returns {*} state - new or identical instance based on changes
+ */
 function calculateNewStateForKey(state, action, key, reducer) {
   const stateForKey = state[key];
   const newStateForKey = reducer(stateForKey, action);
