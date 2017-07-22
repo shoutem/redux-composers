@@ -26,31 +26,23 @@ function resolveKey(action, keySelector) {
   return resolvedKey || TARGET_ALL_REDUCERS;
 }
 
-function calculateNewTargetAllState(state, action, resolveReducer) {
-  let hasChanged = false;
+function calculateNewStateForAllKeys(state, action, resolveReducer) {
+  const newState = _.mapValues(state, (stateForKey, key) => {
+    const reducer = resolveReducer(key) || _.identity;
+    return reducer(stateForKey, action);
+  });
 
-  const newState = _.reduce(state, (result, stateForKey, stateKey) => {
-    const reducer = resolveReducer(stateKey) || _.identity;
-    const newStateForKey = reducer(stateForKey, action);
-
-    hasChanged = hasChanged || newStateForKey !== stateForKey;
-
-    // eslint-disable-next-line no-param-reassign
-    result[stateKey] = newStateForKey;
-    return result;
-  }, {});
-
-  if (!hasChanged) {
+  if (_.eq(state, newState)) {
     return state;
   }
   return newState;
 }
 
-function calculateNewState(state, action, key, reducer) {
+function calculateNewStateForKey(state, action, key, reducer) {
   const stateForKey = state[key];
-
   const newStateForKey = reducer(stateForKey, action);
-  if (stateForKey === newStateForKey) {
+
+  if (_.eq(stateForKey, newStateForKey)) {
     return state;
   }
 
@@ -86,14 +78,14 @@ export function mapReducer(keySelector, reducer) {
     const targetAllAction = isTargetAllAction(action);
 
     if (targetAllAction || targetAllKey) {
-      return calculateNewTargetAllState(
+      return calculateNewStateForAllKeys(
         state,
         action,
         () => reducer
       );
     }
 
-    return calculateNewState(
+    return calculateNewStateForKey(
       state,
       action,
       key,
@@ -117,7 +109,7 @@ export function mapReducerFactory(keySelector, reducerFactory) {
     const targetAllAction = isTargetAllAction(action);
 
     if (targetAllAction || targetAllKey) {
-      return calculateNewTargetAllState(
+      return calculateNewStateForAllKeys(
         state,
         action,
         (stateKey) => reducers[stateKey]
@@ -127,7 +119,7 @@ export function mapReducerFactory(keySelector, reducerFactory) {
     reducers[key] = reducers[key] || reducerFactory(key);
     const reducer = reducers[key];
 
-    return calculateNewState(
+    return calculateNewStateForKey(
       state,
       action,
       key,

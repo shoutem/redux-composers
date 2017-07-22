@@ -80,7 +80,7 @@ describe('Map reducers', () => {
     expect(state).to.deep.equal({ 5: { data: 'today' } });
   });
 
-  it('returns state same instance if no change is applied', () => {
+  it('returns same state instance if no change is applied', () => {
     const testReducer = mapReducers(
       'meta.key',
       reducerNormal
