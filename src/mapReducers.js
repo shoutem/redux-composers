@@ -57,11 +57,11 @@ function calculateNewStateForAllKeys(state, action, resolveReducer) {
  * @param reducer - redux reducer function
  * @returns {*} state - new or identical instance based on changes
  */
-function calculateNewStateForKey(state, action, key, reducer) {
+function calculateNewStateForSingleKey(state, action, key, reducer) {
   const stateForKey = state[key];
   const newStateForKey = reducer(stateForKey, action);
 
-  if (_.eq(stateForKey, newStateForKey)) {
+  if (stateForKey === newStateForKey) {
     return state;
   }
 
@@ -104,7 +104,7 @@ export function mapReducer(keySelector, reducer) {
       );
     }
 
-    return calculateNewStateForKey(
+    return calculateNewStateForSingleKey(
       state,
       action,
       key,
@@ -112,7 +112,6 @@ export function mapReducer(keySelector, reducer) {
     );
   };
 }
-
 
 export function mapReducerFactory(keySelector, reducerFactory) {
   const reducers = {};
@@ -138,7 +137,7 @@ export function mapReducerFactory(keySelector, reducerFactory) {
     reducers[key] = reducers[key] || reducerFactory(key);
     const reducer = reducers[key];
 
-    return calculateNewStateForKey(
+    return calculateNewStateForSingleKey(
       state,
       action,
       key,
