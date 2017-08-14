@@ -3,6 +3,7 @@ import chainReducers from './chainReducers';
 import mapReducers, {
   applyToAll,
   TARGET_ALL_REDUCERS,
+  TARGET_NONE,
 } from './mapReducers';
 
 export {
@@ -12,4 +13,5 @@ export {
 
   applyToAll,
   TARGET_ALL_REDUCERS,
+  TARGET_NONE,
 };
