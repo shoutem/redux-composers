@@ -285,7 +285,7 @@ describe('Map reducers', () => {
         );
       });
 
-       it('does not reduce reducers when the key selector returns TARGET_NONE value', () => {
+      it('does not reduce reducers when the key selector returns TARGET_NONE value', () => {
         const testReducer = mapReducers(
           'meta.key',
           reducerNormal
