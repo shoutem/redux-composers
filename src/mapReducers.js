@@ -6,6 +6,8 @@ import { setActionOption, getActionOptions } from './actionOptions';
 export const TARGET_ALL_OPTION_KEY = 'targetAll';
 // If key selector returns TARGET_ALL_REDUCERS value, all mapped reducers will be activated
 export const TARGET_ALL_REDUCERS = 'TARGET_ALL';
+// If key selector returns TARGET_NONE, no reducers will be activated
+export const TARGET_NONE = 'TARGET_NONE';
 
 function validateKeySelector(keySelector) {
   if (!_.isFunction(keySelector)) {
@@ -22,6 +24,10 @@ function resolveKey(action, keySelector) {
   const resolvedKey = _.isFunction(keySelector) ?
     keySelector(action) :
     _.get(action, keySelector);
+
+  if (resolvedKey === TARGET_NONE) {
+    return null;
+  }
 
   return resolvedKey || TARGET_ALL_REDUCERS;
 }

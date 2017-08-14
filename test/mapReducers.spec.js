@@ -284,6 +284,42 @@ describe('Map reducers', () => {
           }
         );
       });
+
+      it('does not reduce reducers when the key selector returns TARGET_NONE value', () => {
+        const testReducer = mapReducers(
+          'meta.key',
+          reducerNormal
+        );
+        const actionOther = {
+          type: 'test',
+          meta: {
+            key: 'TARGET_NONE',
+          },
+          payload: 'other',
+        };
+        const actionNormal = {
+          type: 'test',
+          meta: {
+            key: 6
+          },
+          payload: 'normal',
+        };
+
+        let state = testReducer(undefined, actionOther);
+        state = testReducer(state, actionNormal);
+
+        const dummyAction = {
+          type: 'test',
+          payload: 'allReducersAffected',
+        };
+        state = testReducer(state, dummyAction);
+        expect(state).to.deep.equal(
+          {
+            6: { data: 'allReducersAffected' },
+          }
+        );
+      });
+
       it('reduces all mapReducer reducers when the action is applied to all', () => {
         const testReducer = mapReducers(
           'meta.key',
