@@ -26,6 +26,10 @@ export function addActionOptions(action, actionOptions = {}) {
   _.set(action, ['meta', ACTION_OPTIONS_KEY], actionOptions);
 }
 
+export function getActionOptions(action) {
+  return _.get(action, ['meta', ACTION_OPTIONS_KEY]);
+}
+
 export function setActionOption(action, option, value) {
   let actionOptions = getActionOptions(action);
   if (!actionOptions) {
@@ -36,6 +40,3 @@ export function setActionOption(action, option, value) {
   return action;
 }
 
-export function getActionOptions(action) {
-  return _.get(action, ['meta', ACTION_OPTIONS_KEY]);
-}

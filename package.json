@@ -27,16 +27,16 @@
     "map"
   ],
   "author": {
-    "name" : "Vedran Ivanac",
-    "email" : "vedran@shoutem.com",
-    "url" : "https://github.com/vedrani"
+    "name": "Vedran Ivanac",
+    "email": "vedran@shoutem.com",
+    "url": "https://github.com/vedrani"
   },
   "contributors": [
-   {
-      "name" : "Željko Rumenjak",
-      "email" : "zeljko@shoutem.com",
-      "url" : "https://github.com/zrumenjak"
-   }
+    {
+      "name": "Željko Rumenjak",
+      "email": "zeljko@shoutem.com",
+      "url": "https://github.com/zrumenjak"
+    }
   ],
   "license": "BSD-3-Clause",
   "bugs": {
