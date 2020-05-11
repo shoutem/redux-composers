@@ -1,6 +1,6 @@
 {
   "name": "@shoutem/redux-composers",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "Reducers you can use for composing reducer hierarchy like with combineReducers from redux",
   "main": "lib/index.js",
   "files": [
@@ -64,6 +64,7 @@
     "mocha": "^2.5.3"
   },
   "dependencies": {
-    "lodash": "^4.13.1"
+    "lodash": "^4.13.1",
+    "shallowequal": "^1.0.2"
   }
 }

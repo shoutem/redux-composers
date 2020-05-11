@@ -1,4 +1,5 @@
 import _ from 'lodash';
+import shallowEqual from 'shallowequal';
 import { setActionOption, getActionOptions } from './actionOptions';
 
 // Action marked as TARGET_ALL_OPTION_KEY bypass key:reducer relationship at map reducers
@@ -40,7 +41,7 @@ function calculateNewStateForAllKeys(state, action, resolveReducer) {
     return reducer(stateForKey, action);
   });
 
-  if (_.eq(state, newState)) {
+  if (shallowEqual(state, newState)) {
     return state;
   }
   return newState;
@@ -56,11 +57,11 @@ function calculateNewStateForAllKeys(state, action, resolveReducer) {
  * @param reducer - redux reducer function
  * @returns {*} state - new or identical instance based on changes
  */
-function calculateNewStateForKey(state, action, key, reducer) {
+function calculateNewStateForSingleKey(state, action, key, reducer) {
   const stateForKey = state[key];
   const newStateForKey = reducer(stateForKey, action);
 
-  if (_.eq(stateForKey, newStateForKey)) {
+  if (stateForKey === newStateForKey) {
     return state;
   }
 
@@ -103,7 +104,7 @@ export function mapReducer(keySelector, reducer) {
       );
     }
 
-    return calculateNewStateForKey(
+    return calculateNewStateForSingleKey(
       state,
       action,
       key,
@@ -111,7 +112,6 @@ export function mapReducer(keySelector, reducer) {
     );
   };
 }
-
 
 export function mapReducerFactory(keySelector, reducerFactory) {
   const reducers = {};
@@ -137,7 +137,7 @@ export function mapReducerFactory(keySelector, reducerFactory) {
     reducers[key] = reducers[key] || reducerFactory(key);
     const reducer = reducers[key];
 
-    return calculateNewStateForKey(
+    return calculateNewStateForSingleKey(
       state,
       action,
       key,
