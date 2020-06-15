@@ -130,7 +130,7 @@ export function mapReducerFactory(keySelector, reducerFactory) {
       return calculateNewStateForAllKeys(
         state,
         action,
-        (stateKey) => reducers[stateKey]
+        (stateKey) => reducers[stateKey] || reducerFactory(stateKey)
       );
     }
 

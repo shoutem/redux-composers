@@ -1,6 +1,6 @@
 {
   "name": "@shoutem/redux-composers",
-  "version": "0.1.6",
+  "version": "0.1.7",
   "description": "Reducers you can use for composing reducer hierarchy like with combineReducers from redux",
   "main": "lib/index.js",
   "files": [
