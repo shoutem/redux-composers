@@ -1,6 +1,6 @@
 {
   "name": "@shoutem/redux-composers",
-  "version": "0.1.7",
+  "version": "0.1.8",
   "description": "Reducers you can use for composing reducer hierarchy like with combineReducers from redux",
   "main": "lib/index.js",
   "files": [
@@ -36,6 +36,11 @@
       "name": "Željko Rumenjak",
       "email": "zeljko@shoutem.com",
       "url": "https://github.com/zrumenjak"
+    },
+    {
+      "name": "Damir Juretić",
+      "email": "damir@shoutem.com",
+      "url": "https://github.com/damirjuretic"
     }
   ],
   "license": "BSD-3-Clause",
@@ -50,6 +55,7 @@
     "@babel/preset-env": "^7.8.7",
     "@babel/register": "^7.8.6",
     "babel-eslint": "^6.0.0",
+    "babel-plugin-lodash": "^3.3.4",
     "chai": "^4.2.0",
     "eslint": "^2.11.1",
     "eslint-config-airbnb": "^9.0.1",
